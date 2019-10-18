@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments :: head">
+   </head>
+<body>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/p5.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/addons/p5.dom.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/addons/p5.sound.min.js"></script>
+
+<div class="navbar navbar-dark bg-dark shadow-sm">
+    <div class="container d-flex justify-content-between">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/in/newsong(id=${owner})}">New song</a>
+        <a href='/login'>log out</a>
+    </div>
+</div>
+<!---<a href='/blogs'>Main Blog Page</a>-->
+<!---<a href='/home'>Home</a>-->
+
+<p th:unless="${blogs} and ${blogs.size()}">no songs</p>
+
+
+<div th:each="blog : *{blogs}">
+<div class="jumbotron">
+    <div class="row mb-4">
+        <div class="col-8">
+            <h2><a th:href="@{/in/blog(id=${blog.id})}" style="color:black;"><span id="demo" th:text="*{blog.title}"> *{blog.title}</span></a></h2>
+            <p th:text="*{blog.body}">${blog.body}</p>
+
+        </div>
+
+        <div class="dropdown col-4">
+            <button style="display:inline-block" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Settings
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <button class="dropdown-item" th:onclick="'deleteSong(\'' + ${blog.id} + '\');'">Delete</button>
+                <button class="dropdown-item" th:onclick="'submitSongName(\'' + ${blog.id} + '\');'" >Rename</button>
+            </div>
+        </div>
+    </div>
+    <form method="POST" action="change_name" id="myForm">
+        <input type="hidden" th:name="title" id="newtitle"/>
+        <input type="hidden" th:name="blogid" id="blogid"/>
+        <input type="hidden" th:name="owner_id" id="owner_idc" th:value="${owner}" />
+    </form>
+
+    <form method="POST" action="/in/delete-task" style="display:inline-block;" id="delete">
+        <input type="hidden" th:name="blogids" id="blogids" th:value="${blog.id}" />
+        <input type="hidden" th:name="owner_id" id="owner_id" th:value="${owner}" />
+
+    </form>
+
+    <p id="demo"></p>
+    <script type="text/javascript" th:inline="javascript">
+
+function submitSongName(id) {
+
+
+  var txt;
+  var person = prompt("Enter the songs name:", "Song name");
+  if (person == null || person == "" || person == "Song name") {
+    txt = "User cancelled the prompt.";
+  } else {
+    txt = person;
+    //let postData = { title: txt, blogid: id };
+    document.getElementById("newtitle").setAttribute("value",txt)
+  document.getElementById("blogid").setAttribute("value",id)
+  document.getElementById("demo").innerHTML = txt;
+  document.getElementById("myForm").submit();
+  }
+
+}
+function deleteSong(id) {
+
+
+var txt;
+var person = confirm("Are you sure?");
+if (person == null || person == false || person == "Song name") {
+  txt = "User cancelled the prompt.";
+} else {
+  txt = person;
+  //let postData = { title: txt, blogid: id };
+ // document.getElementById("newtitle").setAttribute("value",txt)
+document.getElementById("blogids").setAttribute("value",id)
+//document.getElementById("demo").innerHTML = txt;
+document.getElementById("delete").submit();
+}
+
+}
+</script>
+
+
+
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+</body>
+</html>

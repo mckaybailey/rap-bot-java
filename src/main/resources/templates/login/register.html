@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head th:replace="fragments :: head"></head>
+
+<body>
+<a href='/login'>log in</a>
+
+
+
+
+
+<h1 class="text-center">Register to start writing!</h1>
+<form action="/login/register" method="post" th:object="${user}" class="form-signin text-center">
+
+    <table style="width: 50%; margin: 0 auto !important">
+        <tr>
+            <td><label th:for="email" class="sr-only">Username</label></td>                        <td>
+            <input th:field="*{email}" th:name="email" class="form-control" type="text" th:value="${ email }" placeholder="Email address"/>
+        </td>
+        </tr>
+        <tr>
+            <td><label th:for="password" class="sr-only">Password</label></td>
+            <td>
+                <input th:field="*{password}" th:name="password" class="form-control" type="password" placeholder="Password"/>                        </td>
+        </tr>
+        <tr>
+            <td><label th:for="verify" class="sr-only">Verify Password</label></td>
+            <td>
+                <input th:name="verify" class="form-control" type="password" placeholder="Verify Password"/>
+            </td>
+        </tr>
+    </table>
+    <input type="image" src="submit.gif" alt="Submit" width="48" height="48"/>
+
+</form>
+</body>
+</html>

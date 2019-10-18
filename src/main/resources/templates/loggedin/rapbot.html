@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org/">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${title}">My Cheeses</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"/>
+
+    <title>Wordnik API</title>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/p5.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/addons/p5.dom.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/addons/p5.sound.min.js"></script>
+
+    <style>
+        /* Popup container - can be anything you want */
+        .popup {
+          position: relative;
+          display: inline-block;
+          cursor: pointer;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+        }
+
+        /* The actual popup */
+        .popup .popuptext {
+          visibility: hidden;
+          width: 160px;
+          background-color: #555;
+          color: #fff;
+          text-align: center;
+          border-radius: 6px;
+          padding: 8px 0;
+          position: absolute;
+          z-index: 1;
+          bottom: 125%;
+          left: 50%;
+          margin-left: -80px;
+        }
+
+        /* Popup arrow */
+        .popup .popuptext::after {
+          content: "";
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          margin-left: -5px;
+          border-width: 5px;
+          border-style: solid;
+          border-color: #555 transparent transparent transparent;
+        }
+
+        /* Toggle this class - hide and show the popup */
+        .popup .show {
+          visibility: visible;
+          -webkit-animation: fadeIn 1s;
+          animation: fadeIn 1s;
+        }
+
+        /* Add animation (fade in the popup) */
+        @-webkit-keyframes fadeIn {
+          from {opacity: 0;}
+          to {opacity: 1;}
+        }
+
+        @keyframes fadeIn {
+          from {opacity: 0;}
+          to {opacity:1 ;}
+        }
+        #wrapper {
+    margin-left:auto;
+    margin-right:auto;
+    width:1171.05px;
+}
+        </style>
+
+</head>
+
+<body>
+<div id="wrapper">
+
+<div class="container-fluid">
+
+<div class="row">
+<div class="col-md-3">
+    <form method='post' id="actualsong" style="width:270px;">
+        <a th:href="@{/in(id=${blog.owner_id})}" id="allsonglink" onclick="document.getElementById('SaveSong').click();">All your songs</a><br/>
+        <textarea style="font-family:verdana;z-index: 1;text-transform: lowercase;width: 16em; height: 26em;position: relative;left:.5em;" id = "word1234" th:name="blog" onkeyup="askWordnikType()" th:text="${blog.body}"></textarea>
+        <input type="hidden" th:name="blog_id" th:value="${blog.id}" />
+        <input type="hidden" th:name="owner_id" id="owner_id" th:value="${owner}" />
+    </form>
+</div>
+    <div class="col-md-2">
+        <table>
+            <tr>
+    <input  style="vertical-align:top; margin: 0px 20px;" class="btn btn-secondary" type="submit" value='Save Song' id="SaveSong" form="actualsong" />
+            </tr>
+
+
+            <tr >
+
+    <div style="padding: 20% 0px 0px 0px;">
+        <div id = "rhymes" style=""></div>
+        <div style="position:absolute; top:400px;">
+        <span th:onmousedown="'changeListPage(\'' + '' + '\');'" class="btn btn-secondary" style="position: relative;right:.75em">&#8592;</span>
+        <span th:onmousedown="'changeListPage(\'' + 'true' + '\');'" class="btn btn-secondary" style="position: relative;right:.75em">&#8594;</span>
+        </div>
+
+    </div>
+            </tr>
+        </table>
+    </div>
+
+
+    <div class="col-md-7">
+        <table>
+            <tr>
+
+    <div data-toggle="buttons" style="z-index: 5;" >
+        <div class="btn-group btn-group-justified">
+            <label class="btn btn-primary" th:onmousedown="'changeList(\'' + 'rel_rhy=' + '\');'">
+                <input id="radio1" type="radio" name="gender" value="male" />Rhyme
+            </label>
+
+            <label class="btn btn-primary" th:onmousedown="'changeList(\'' + 'sl=' + '\');'">
+                <input type="radio" name="gender" value="other" /> sounds like</label>
+            <label class="btn btn-primary" th:onmousedown="'changeList(\'' + 'rel_nry=' + '\');'">
+                <input type="radio" name="gender" value="other" /> Close Rhymes
+            </label>
+            <label class="btn btn-primary" th:onmousedown="'changeList(\'' + 'rel_hom=' + '\');'">
+                <input type="radio" name="gender" value="male" /> homophones
+            </label>
+            <label class="btn btn-primary" th:onmousedown="'changeList(\'' + 'rel_cns=' + '\');'">
+                <input type="radio" name="gender" value="other" /> consonant match
+            </label>
+
+
+        </div>
+        <div class="btn-group btn-group-justified" style="position:relative;left:3em;">
+            <br/>
+            <label class="btn btn-primary" th:onmousedown="'changeList(\'' + 'ml=' + '\');'">
+                <input  type="radio" name="gender" value="male" /> Means like
+            </label>
+
+
+            <label class="btn btn-primary" th:onmousedown="'changeList(\'' + 'rel_gen=' + '\');'">
+                <input type="radio" name="gender" value="other" /> generalized
+            </label>
+            <label class="btn btn-primary" th:onmousedown="'changeList(\'' + 'rel_spc=' + '\');'">
+                <input type="radio" name="gender" value="other" /> specific
+            </label>
+            <label class="btn btn-primary" th:onmousedown="'changeList(\'' + 'rel_syn=' + '\');'">
+                <input type="radio" name="gender" value="male" /> synonyms
+            </label>
+            <label class="btn btn-primary" th:onmousedown="'changeList(\'' + 'rel_ant=' + '\');'">
+                <input type="radio" name="gender" value="other" /> antonyms
+            </label>
+
+        </div>
+        <div class="btn-group btn-group-justified" style="position:relative;left:5em;">
+            <br/>
+            <label class="btn btn-primary" th:onmousedown="'changeList(\'' + 'rel_bgb=' + '\');'">
+                <input type="radio" name="gender" value="male" /> comes before
+            </label>
+            <label class="btn btn-primary" th:onmousedown="'changeList(\'' + 'rel_bga=' + '\');'">
+                <input type="radio" name="gender" value="other" /> comes after
+            </label>
+            <label class="btn btn-primary"  th:onmousedown="'changeList(\'' + 'rel_com=' + '\');'">
+                <input type="radio" name="gender" value="other" /> holonyms
+            </label>
+            <label class="btn btn-primary" th:onmousedown="'changeList(\'' + 'rel_par=' + '\');'">
+                <input  type="radio" name="gender" value="male" /> meronyms
+
+            </label>
+
+
+        </div>
+
+        <div class="btn-group btn-group-justified" style="position:relative;left:4.5em;">
+            <br/>
+            <label class="btn btn-primary" th:onmousedown="'changeList(\'' + 'rel_jjb=' + '\');'">
+                <input type="radio" name="gender" value="other" /> adj that effects
+            </label>
+            <label class="btn btn-primary" th:onmousedown="'changeList(\'' + 'rel_trg=' + '\');'">
+                <input type="radio" name="gender" value="other" /> trigger
+            </label>
+
+            <label class="btn btn-primary" th:onmousedown="'changeList(\'' + 'rel_jja=' + '\');'">
+                <input type="radio" name="gender" value="other" /> nouns effected
+            </label>
+            <label class="btn btn-primary" th:onmousedown="'changeList(\'' + 'sp=' + '\');'">
+                <input type="radio" name="gender" value="other" /> spelled like
+            </label>
+
+        </div>
+    </div>
+            </tr>
+<tr>
+            <div style="z-index: 3;margin:20% 20%">
+
+                <div class="popup btn btn-secondary" th:onclick="'metaPop(\'' + 'defs' + '\');'" th:onmousedown="'mdLetters(\'' + 'd' + '\');'"> Definitions
+                    <span class="popuptext" id="defs"></span>
+                </div>
+                <div class="popup btn btn-secondary" th:onclick="'metaPop(\'' + '0' + '\');'" th:onmousedown="'mdLetters(\'' + 'psrf' + '\');'" style="position: relative;left: 12em;">info
+                    <span class="popuptext" id="0"></span>
+                </div>
+            </div>
+</tr>
+
+</table>
+</div>
+    <div style="position: relative;bottom: 28.37em;right: -1.52em;font-family:verdana;z-index: 1;width: 15.8em;" id = "usersong">     </div>
+
+</div>
+</div>
+
+
+    <br/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="/webjars/bootstrap/4.1.3/js"></script>
+
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/style.js}"></script>
+</div>
+</body>
+</html>
